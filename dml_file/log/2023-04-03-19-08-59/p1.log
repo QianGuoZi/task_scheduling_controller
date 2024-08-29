@@ -1,0 +1,7 @@
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://172.22.0.3:4444/ (Press CTRL+C to quit)
+127.0.0.1 - - [03/Apr/2023 11:08:33] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 11:08:59] "GET //start HTTP/1.1" 200 -
+127.0.0.1 - - [03/Apr/2023 11:09:03] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 11:09:26] "GET //log HTTP/1.1" 200 -

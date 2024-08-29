@@ -1,0 +1,15 @@
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://172.19.0.21:4444/ (Press CTRL+C to quit)
+127.0.0.1 - - [27/Apr/2023 09:18:03] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:18:03] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:18:22] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:18:52] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:19:22] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:19:52] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:20:23] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:20:53] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:21:23] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:21:53] "GET /hi HTTP/1.1" 200 -
+127.0.0.1 - - [27/Apr/2023 09:22:23] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [27/Apr/2023 09:22:46] "GET //log HTTP/1.1" 200 -

@@ -1,0 +1,15 @@
+{
+  "tc_link":"links.json",
+  "case":[
+    {
+      "operation":"add",
+      "name":"n6",
+      "working_dir":"/home/qianguo/worker/dml_app",
+      "cmd":["python3","gl_peer.py"],
+      "image":"dml:v1.0", 
+      "cpu":4,
+      "ram":4,
+      "unit":"G"
+    }
+  ]
+}

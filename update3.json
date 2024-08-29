@@ -1,0 +1,9 @@
+{
+  "tc_link":"links.json",
+  "case":[
+    {
+      "operation":"delete",
+      "name":"n2"
+    }
+  ]
+}

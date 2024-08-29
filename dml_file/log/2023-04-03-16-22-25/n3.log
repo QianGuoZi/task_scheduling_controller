@@ -1,0 +1,42 @@
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://172.22.0.5:4444/ (Press CTRL+C to quit)
+222.201.187.50 - - [03/Apr/2023 08:21:48] "POST //conf/dataset HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 08:22:01] "POST //conf/structure HTTP/1.1" 200 -
+127.0.0.1 - - [03/Apr/2023 08:22:07] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 08:22:25] "GET //start HTTP/1.1" 200 -
+Aggregate: accuracy=0.18400000047683715, round=0,
+gossip to n2
+172.22.0.1 - - [03/Apr/2023 08:22:26] "POST //gossip HTTP/1.1" 200 -
+send weights to 222.201.187.51:8002, cost=0.962122917175293
+Train: loss=0.6986698508262634, round=1,
+Aggregate: accuracy=0.13336675667762757, round=1,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.24357390403747559
+172.22.0.1 - - [03/Apr/2023 08:22:35] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.4098743498325348, round=2,
+Aggregate: accuracy=0.1338680727481842, round=2,
+gossip to n1
+172.22.0.1 - - [03/Apr/2023 08:22:37] "POST //gossip HTTP/1.1" 200 -
+send weights to 222.201.187.51:8001, cost=0.2433490753173828
+127.0.0.1 - - [03/Apr/2023 08:22:37] "GET /hi HTTP/1.1" 200 -
+Train: loss=0.40789875388145447, round=3,
+Aggregate: accuracy=0.31788918310403824, round=3,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.24593734741210938
+172.22.0.1 - - [03/Apr/2023 08:22:43] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.3147158920764923, round=4,
+Aggregate: accuracy=0.5682955133914948, round=4,
+gossip to n2
+send weights to 222.201.187.51:8002, cost=0.9641759395599365
+172.22.0.1 - - [03/Apr/2023 08:22:50] "POST //gossip HTTP/1.1" 200 -
+172.22.0.1 - - [03/Apr/2023 08:22:50] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.2577047049999237, round=5,
+Aggregate: accuracy=0.801709762096405, round=5,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.24377822875976562
+Train: loss=0.2664286196231842, round=6,
+Aggregate: accuracy=0.7991187314987183, round=6,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.24561190605163574
+222.201.187.50 - - [03/Apr/2023 08:22:57] "GET //log HTTP/1.1" 200 -

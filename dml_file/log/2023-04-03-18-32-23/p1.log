@@ -1,0 +1,23 @@
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://172.22.0.3:4444/ (Press CTRL+C to quit)
+127.0.0.1 - - [03/Apr/2023 10:31:18] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 10:31:44] "POST //conf/dataset HTTP/1.1" 200 -
+127.0.0.1 - - [03/Apr/2023 10:31:48] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 10:31:53] "POST //conf/structure HTTP/1.1" 200 -
+127.0.0.1 - - [03/Apr/2023 10:32:19] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 10:32:23] "GET //start HTTP/1.1" 200 -
+Aggregate: accuracy=0.1080000001192093, round=0,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.19437336921691895
+172.22.0.1 - - [03/Apr/2023 10:32:27] "POST //gossip HTTP/1.1" 200 -
+172.22.0.1 - - [03/Apr/2023 10:32:30] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.5867179036140442, round=1,
+Aggregate: accuracy=0.1434986801147461, round=1,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.32702088356018066
+222.201.187.50 - - [03/Apr/2023 10:32:33] "GET //log HTTP/1.1" 200 -
+Train: loss=0.4253239631652832, round=2,
+Aggregate: accuracy=0.12559366607666014, round=2,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.3256199359893799

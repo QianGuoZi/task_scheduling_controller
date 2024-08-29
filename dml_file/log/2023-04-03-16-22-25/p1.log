@@ -1,0 +1,43 @@
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://172.22.0.4:4444/ (Press CTRL+C to quit)
+222.201.187.50 - - [03/Apr/2023 08:21:49] "POST //conf/dataset HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 08:22:01] "POST //conf/structure HTTP/1.1" 200 -
+127.0.0.1 - - [03/Apr/2023 08:22:06] "GET /hi HTTP/1.1" 200 -
+222.201.187.50 - - [03/Apr/2023 08:22:25] "GET //start HTTP/1.1" 200 -
+Aggregate: accuracy=0.12800000023841857, round=0,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.3223533630371094
+172.22.0.1 - - [03/Apr/2023 08:22:30] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.6181166768074036, round=1,
+Aggregate: accuracy=0.30789973452687264, round=1,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.19732666015625
+127.0.0.1 - - [03/Apr/2023 08:22:36] "GET /hi HTTP/1.1" 200 -
+172.22.0.1 - - [03/Apr/2023 08:22:37] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.3787234425544739, round=2,
+Aggregate: accuracy=0.18005804827809332, round=2,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.19430851936340332
+172.22.0.1 - - [03/Apr/2023 08:22:40] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.35579556226730347, round=3,
+Aggregate: accuracy=0.6433456449508667, round=3,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.3232839107513428
+172.22.0.1 - - [03/Apr/2023 08:22:45] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.3474409580230713, round=4,
+Aggregate: accuracy=0.7699155659675598, round=4,
+gossip to n1
+send weights to 222.201.187.51:8001, cost=0.1939070224761963
+172.22.0.1 - - [03/Apr/2023 08:22:52] "POST //gossip HTTP/1.1" 200 -
+172.22.0.1 - - [03/Apr/2023 08:22:55] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.2885815501213074, round=5,
+Aggregate: accuracy=0.8571820569038391, round=5,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.32474184036254883
+222.201.187.50 - - [03/Apr/2023 08:22:57] "GET //log HTTP/1.1" 200 -
+172.22.0.1 - - [03/Apr/2023 08:22:58] "POST //gossip HTTP/1.1" 200 -
+Train: loss=0.2735596299171448, round=6,
+Aggregate: accuracy=0.8136886548995972, round=6,
+gossip to n4
+send weights to 222.201.187.51:8004, cost=0.32616186141967773
