@@ -74,7 +74,7 @@ class Manager(metaclass=abc.ABCMeta):
             print(request.form['msg'])
             # self.testbed.executor.submit(self.__send_logs_to_backend, request.form['msg'])
             return ''
-
+        # tc
         @self.testbed.flask.route('/update/tc', methods=['GET'])
         def route_update_tc():
             """
