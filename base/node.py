@@ -157,6 +157,7 @@ class Emulator(Worker):
 		del self.eNode[en.name]
 
 	def save_yml(self, path: str):
+		# 保存yml
 		if not self.eNode:
 			return
 		str_yml = 'version: "2.1"\n'
