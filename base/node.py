@@ -205,6 +205,59 @@ class Emulator(Worker):
 		yml_name = os.path.join(path, self.nameW + '.yml')
 		with open(yml_name, 'w') as f:
 			f.writelines(str_yml)
+	
+	
+	def save_yml_ovs(self, path: str):
+		# 保存yml，使用ovs进行组网
+		if not self.eNode:
+			return
+		str_yml = 'version: "2.1"\n'
+		if self.nfs:
+			str_yml += 'volumes:\n'
+			for nfs in self.nfs:
+				str_yml = str_yml \
+						  + '  ' + nfs.tag + ':\n' \
+						  + '    driver_opts:\n' \
+						  + '      type: "nfs"\n' \
+						  + '      o: "addr=' + self.ipTestbed + ',ro"\n' \
+						  + '      device: ":' + nfs.path + '"\n'
+		curr_cpu = 0
+		str_yml += 'services:\n'
+		for en in self.eNode.values():
+			str_yml = str_yml \
+					  + '  ' + en.name + ':\n' \
+					  + '    container_name: ' + en.name + '\n' \
+					  + '    image: ' + en.image + '\n' \
+					  + '    working_dir: ' + en.workingDir + '\n' \
+					  + '    stdin_open: true\n' \
+					  + '    tty: true\n' \
+					  + '    cap_add:\n' \
+					  + '      - NET_ADMIN\n' \
+					  + '    cpuset: ' + str(curr_cpu) + '-' + str(curr_cpu + en.cpu - 1) + '\n' \
+					  + '    mem_limit: ' + str(en.ram) + 'M\n'
+			curr_cpu += en.cpu
+			str_yml += '    environment:\n'
+			for key in en.variable:
+				str_yml += '      - ' + key + '=' + en.variable[key] + '\n'
+			str_yml = str_yml \
+					  + '    healthcheck:\n' \
+					  + '      test: curl -f http://localhost:' + str(en.dmlPort) + '/hi\n'
+			str_yml = str_yml \
+					  + '    ports:\n' \
+					  + '      - "' + str(en.hostPort) + ':' + str(en.dmlPort) + '"\n'
+			if en.volume:
+				str_yml += '    volumes:\n'
+				for v in en.volume:
+					str_yml += '      - ' + v + ':' + en.volume[v] + '\n'
+			if en.cmd:
+				str_yml += '    command: ' + ' '.join(en.cmd) + '\n'
+			str_yml += '    networks:\n' \
+					 + '		none: {{}}'
+
+		# save as yml file
+		yml_name = os.path.join(path, self.nameW + '.yml')
+		with open(yml_name, 'w') as f:
+			f.writelines(str_yml)
 
 
 class Testbed(object):
