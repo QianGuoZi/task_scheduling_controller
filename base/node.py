@@ -667,6 +667,8 @@ class Testbed(object):
 				print('physical node ' + pn.name + ' tc failed, err:')
 				print(res)
 
+	# def __send_ovs() 发送ovs信息
+
 	def __launch_all_physical(self):
 		"""
 		send a launch message to physical nodes to launch the dml application.
@@ -727,6 +729,7 @@ class Testbed(object):
 			path_req = os.path.join(self.dirName, 'dml_app/dml_req.txt')
 			self.__build_physical_env(path_req)
 
+		# self.__send_network() #通过请求发送组网的情况
 		self.__send_tc()
 		self.__launch_all_physical()
 		self.launch_all_emulated()
