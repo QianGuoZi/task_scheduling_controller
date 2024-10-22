@@ -207,8 +207,8 @@ class Emulator(Worker):
 			f.writelines(str_yml)
 	
 	
-	def save_yml_ovs(self, path: str):
-		# 保存yml，使用ovs进行组网
+	def save_yml_subnet(self, path: str):
+		# 保存yml，添加子网，达到子网隔离
 		if not self.eNode:
 			return
 		str_yml = 'version: "2.1"\n'
@@ -221,6 +221,22 @@ class Emulator(Worker):
 						  + '      type: "nfs"\n' \
 						  + '      o: "addr=' + self.ipTestbed + ',ro"\n' \
 						  + '      device: ":' + nfs.path + '"\n'
+		# 定义子网
+		# 需要考虑多少用户和多少服务
+		str_yml += 'networks:\n'
+		for user, services in self.eNode.items():
+			subnet = f"172.20.{len(services)}.0/24" #172.20.用户id.0/24
+			gateway = f"172.20.{len(services)}.1"
+			str_yml += (
+			    f'  {user}-net:\n'
+                f'    driver: bridge\n'
+                f'    ipam:\n'
+                f'      driver: default\n'
+                f'      config:\n'
+                f'        - subnet: {subnet}\n'
+                f'          gateway: {gateway}\n'
+            )
+
 		curr_cpu = 0
 		str_yml += 'services:\n'
 		for en in self.eNode.values():
