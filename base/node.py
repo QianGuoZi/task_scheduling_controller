@@ -12,6 +12,7 @@ from .link import RealLink, VirtualLink
 from .manager import Manager
 from .nfs import Nfs
 from .utils import send_data
+from .scheduler.task_analyzer import TaskAnalyzer
 
 
 class Worker(object):
@@ -281,7 +282,7 @@ class Testbed(object):
 	testbed controller.
 	"""
 
-	def __init__(self, ip: str, base_host_port: int, dir_name: str, manager_class: Type[Manager]):
+	def __init__(self, ip: str, base_host_port: int, dir_name: str, manager_class: Type[Manager], task_analyzer: TaskAnalyzer):
 		self.currWID: int = 0  # build-in worker ID.
 		self.currRID: int = 0  # build-in real link ID.
 		self.currNID: int = 0  # build-in node ID.
@@ -317,6 +318,9 @@ class Testbed(object):
 		self.deployedCount: int = 0
 		self.lock = threading.RLock()
 		self.executor = ThreadPoolExecutor()
+
+		# task_analyzer
+		self.taskAnalyzer = task_analyzer(self)
 
 	def __next_w_id(self):
 		self.currWID += 1
