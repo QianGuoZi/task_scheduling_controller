@@ -41,6 +41,55 @@ class TaskAnalyzer(object):
                     ├─ peer.py
                     ├─ Dockerfile
             """
+            def analyse_file(taskId: int):
+                """
+                处理用户的文件，将压缩包解压并放到不同的文件夹中
+                dml_app和dml_file需要和worker挂载，要不直接挂载一个大的文件夹，然后往里面更新算了（
+                那挂载可以不动了，直接在下面为task创建对应的文件夹，文件路径改改
+                worker_utils可以获得taskId，喜
+                """
+                zip_filename = f"{taskId}_taskFile.zip"
+                zip_path = os.path.join(dirName, "task_file", zip_filename)
+                
+                current_directory = os.path.join(dirName, "task_file", str(taskId))
+                os.makedirs(current_directory, exist_ok=True)
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(current_directory)
+                            
+                # os.remove(zip_path)
+
+                # 复制 links.json到task_links/{taskId}/links.json
+                links_json_path = os.path.join(current_directory, 'links.json')
+                target_links_json_path = os.path.join(dirName, "task_links", str(taskId))
+                if not os.path.exists(target_links_json_path) :
+                    os.makedirs(target_links_json_path)
+                shutil.copy2(links_json_path, target_links_json_path)
+
+                # 复制 manager.py到task_manager/{taskId}/ml_manager.py
+                manager_path = os.path.join(current_directory, 'ml_manager.py')
+                target_manager_path = os.path.join(dirName, "task_manager", str(taskId))
+                if not os.path.exists(target_manager_path) :
+                    os.makedirs(target_manager_path)
+                shutil.copy2(manager_path, target_manager_path)
+                
+                # 创建 dml_tool 子目录
+                target_dml_file_dir = os.path.join(dirName, "dml_tool", str(taskId))
+                os.makedirs(target_dml_file_dir, exist_ok=True)
+                
+                # 复制 dml_file 文件夹到指定目录 /controller/dml_file/{taskId}/
+                source_dml_file_dir = os.path.join(current_directory, 'dml_tool')
+                if os.path.exists(source_dml_file_dir):
+                    shutil.copytree(source_dml_file_dir, target_dml_file_dir, dirs_exist_ok=True)
+
+                # 创建 dml_app 子目录
+                target_dml_app_dir = os.path.join(dirName, "dml_app", str(taskId))
+                os.makedirs(target_dml_app_dir, exist_ok=True)
+                
+                # 移动 dml_app 文件夹到指定目录 /controller/dml_app/{taskId}/
+                source_dml_app_dir = os.path.join(current_directory, 'dml_app')
+                if os.path.exists(source_dml_app_dir):
+                    shutil.copytree(source_dml_app_dir, target_dml_app_dir, dirs_exist_ok=True)
+                return
             if 'file' not in request.files:
                     return 'No file part', 400
                 
@@ -57,8 +106,11 @@ class TaskAnalyzer(object):
                 self.taskFileList[taskId] = {'links_file': filename}
                 print(save_path)
                 file.save(save_path)
+                analyse_file(taskId)
+
                 # 返回成功响应
                 return 'File successfully uploaded.', 200
+            
             return
         
         @self.testbed.flask.route('/startTask', methods=['GET'])
@@ -68,62 +120,16 @@ class TaskAnalyzer(object):
             1、处理用户文件
             2、分析任务请求
             3、将请求交给Scheduler处理并接收结果
-            4、启动Edgetb
+            4、启动Edgetb（包括保存节点信息切割数据集生成对应的structure等步骤）
             5、返回实验结果
             """
-            task_id = request.args.get('taskId')
-            def analyse_file():
-                """
-                处理用户的文件，将压缩包解压并放到不同的文件夹中
-                dml_app和dml_file需要和worker挂载，要不直接挂载一个大的文件夹，然后往里面更新算了（
-                那挂载可以不动了，直接在下面为task创建对应的文件夹，文件路径改改
-                worker_utils可以获得taskId，喜
-                """
-                zip_filename = f"{task_id}_taskFile.zip"
-                zip_path = os.path.join(dirName, "task_file", zip_filename)
-                
-                current_directory = os.path.join(dirName, "task_file", task_id)
-                os.makedirs(current_directory, exist_ok=True)
-                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(current_directory)
-                            
-                # os.remove(zip_path)
-
-                # 移动 links.json到task_links 并改名为 {taskId}_links.json
-                links_json_path = os.path.join(current_directory, 'links.json')
-                target_links_json_path = os.path.join(dirName, "task_links", task_id, "links.json")
-                if os.path.exists(links_json_path):
-                    shutil.move(links_json_path, target_links_json_path)
-                
-                # 创建 dml_file 子目录
-                target_dml_file_dir = os.path.join(dirName, "dml_file", task_id)
-                os.makedirs(target_dml_file_dir, exist_ok=True)
-                
-                # 移动 dml_file 文件夹到指定目录
-                source_dml_file_dir = os.path.join(current_directory, 'dml_file')
-                if os.path.exists(source_dml_file_dir):
-                    shutil.move(source_dml_file_dir, target_dml_file_dir)
-
-                # 创建 dml_app 子目录
-                target_dml_app_dir = os.path.join(dirName, "dml_app", task_id)
-                os.makedirs(target_dml_app_dir, exist_ok=True)
-                
-                # 移动 dml_app 文件夹到指定目录
-                source_dml_app_dir = os.path.join(current_directory, 'dml_app')
-                if os.path.exists(source_dml_app_dir):
-                    shutil.move(source_dml_app_dir, target_dml_app_dir)
-                
-                return
-            
-            def analyse_task():
-                """
-                分析任务需求
-                """
+            taskId = request.args.get('taskId')
 
             def task_schedule():
                 """
-                丢给Scheduler处理
+                丢给Scheduler处理，得到gl_run.py里的配置
                 """
+                
             
             def edgeTB_start():
                 """
