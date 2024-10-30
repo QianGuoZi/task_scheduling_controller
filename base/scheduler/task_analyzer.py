@@ -124,17 +124,30 @@ class TaskAnalyzer(object):
             5、返回实验结果
             """
             taskId = request.args.get('taskId')
+            allocation = task_schedule(taskId)
+            edgeTB_start(allocation)
 
-            def task_schedule():
+            def task_schedule(taskId: int):
                 """
                 丢给Scheduler处理，得到gl_run.py里的配置
                 """
-                
+                allocation = self.testbed.scheduler.resource_schedule(taskId)
+                for node, node_info in allocation: 
+                    print(f"node name: {node}, node object: {node_info}")
+                return allocation
             
-            def edgeTB_start():
+            def edgeTB_start(allocation: Dict):
                 """
                 让edgetb启动相应的容器
                 """
+                for node, node_info in allocation:
+                    emu = self.testbed.emulator[node_info['emulator']]
+                    en = self.testbed.add_emulated_node (node, '/home/qianguo/worker/dml_app',
+                        ['python3', 'gl_peer.py'], 'dml:v1.0', cpu=16, ram=2, unit='G', emulator=emu)
+                    en.mount_local_path ('./dml_file', '/home/qianguo/worker/dml_file')
+                    en.mount_nfs (nfsApp, '/home/qianguo/worker/dml_app')
+                    en.mount_nfs (nfsDataset, '/home/qianguo/worker/dataset')
+            
             def task_finish():
                 """
                 最终收尾工作
@@ -151,7 +164,7 @@ class TaskAnalyzer(object):
     
     def send_request_edgetb():
         """
-        将请求发送给edgetb
+        将请求发送给edgetb   
         """
         return
     
