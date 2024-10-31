@@ -140,9 +140,11 @@ class TaskAnalyzer(object):
                 """
                 让edgetb启动相应的容器
                 """
+                nfsApp = self.testbed.nfs['dml_app']
+                nfsDataset = self.testbed.nfs['dataset']
                 for node, node_info in allocation:
                     emu = self.testbed.emulator[node_info['emulator']]
-                    en = self.testbed.add_emulated_node (node, '/home/qianguo/worker/dml_app',
+                    en = self.testbed.add_emulated_node (node, '/home/qianguo/worker/dml_app/'+str(taskId),
                         ['python3', 'gl_peer.py'], 'dml:v1.0', cpu=16, ram=2, unit='G', emulator=emu)
                     en.mount_local_path ('./dml_file', '/home/qianguo/worker/dml_file')
                     en.mount_nfs (nfsApp, '/home/qianguo/worker/dml_app')
