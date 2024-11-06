@@ -171,20 +171,6 @@ class TaskAnalyzer(object):
                 最终收尾工作
                 """
             return
-        
-   
-    
-    def analyse_request():
-        """
-        分析任务请求，发送给Scheduler，接收结果
-        """
-        return
-    
-    def send_request_edgetb():
-        """
-        将请求发送给edgetb   
-        """
-        return
     
     def __next_task_id(self):
         """
