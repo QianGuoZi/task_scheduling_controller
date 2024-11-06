@@ -7,6 +7,7 @@ import shutil
 from typing import Dict
 import zipfile
 from flask import request
+from base.utils import read_json
 
 # dirName = os.path.abspath (os.path.dirname (__file__))
 dirName = '/home/qianguo/controller/'
@@ -136,12 +137,15 @@ class TaskAnalyzer(object):
                     print(f"node name: {node}, node object: {node_info}")
                 return allocation
             
-            def edgeTB_start(allocation: Dict):
+            def edgeTB_start(taskId: int, allocation: Dict):
                 """
                 让edgetb启动相应的容器
                 """
+                # 挂载
                 nfsApp = self.testbed.nfs['dml_app']
                 nfsDataset = self.testbed.nfs['dataset']
+                
+                # 添加节点
                 for node, node_info in allocation:
                     emu = self.testbed.emulator[node_info['emulator']]
                     en = self.testbed.add_emulated_node (node, '/home/qianguo/worker/dml_app/'+str(taskId),
@@ -149,6 +153,18 @@ class TaskAnalyzer(object):
                     en.mount_local_path ('./dml_file', '/home/qianguo/worker/dml_file')
                     en.mount_nfs (nfsApp, '/home/qianguo/worker/dml_app')
                     en.mount_nfs (nfsDataset, '/home/qianguo/worker/dataset')
+                
+                # 解析links
+                links_json = read_json (os.path.join (dirName, "task_links", str(taskId),'links.json'))
+                self.testbed.load_link (links_json)
+
+                # 保存信息
+                self.testbed.save_yml()
+                self.testbed.save_node_info()
+                self.testbed.manager.load_node_info()
+                self.testbed.__send_emulator_info()
+                self.testbed.__send_tc()
+                # lauch要重写
             
             def task_finish():
                 """

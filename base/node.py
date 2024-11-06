@@ -135,6 +135,7 @@ class Emulator(Worker):
 		self.ramPreMap: int = 0  # allocated ram.
 		self.nfs: List[Nfs] = []  # mounted nfs.
 		self.eNode: Dict[str, EmulatedNode] = {}  # emulated node's name to emulated node object.
+		self.curr_cpu: int = 0	# 服务器目前的cpuId
 
 	def mount_nfs(self, nfs: Nfs):
 		assert nfs not in self.nfs, Exception(nfs.tag + ' has been mounted')
@@ -207,10 +208,10 @@ class Emulator(Worker):
 		yml_name = os.path.join(path, self.nameW + '.yml')
 		with open(yml_name, 'w') as f:
 			f.writelines(str_yml)
-	
-	
-	def save_yml_subnet(self, path: str):
-		# 保存yml，添加子网，达到子网隔离
+
+
+	def save_yml_user(self, path: str, taskId: int):
+		# 保存yml
 		if not self.eNode:
 			return
 		str_yml = 'version: "2.1"\n'
@@ -223,23 +224,7 @@ class Emulator(Worker):
 						  + '      type: "nfs"\n' \
 						  + '      o: "addr=' + self.ipTestbed + ',ro"\n' \
 						  + '      device: ":' + nfs.path + '"\n'
-		# 定义子网
-		# 需要考虑多少用户和多少服务
-		str_yml += 'networks:\n'
-		for user, services in self.eNode.items():
-			subnet = f"172.20.{len(services)}.0/24" #172.20.用户id.0/24
-			gateway = f"172.20.{len(services)}.1"
-			str_yml += (
-			    f'  {user}-net:\n'
-                f'    driver: bridge\n'
-                f'    ipam:\n'
-                f'      driver: default\n'
-                f'      config:\n'
-                f'        - subnet: {subnet}\n'
-                f'          gateway: {gateway}\n'
-            )
-
-		curr_cpu = 0
+		self.curr_cpu = 0
 		str_yml += 'services:\n'
 		for en in self.eNode.values():
 			str_yml = str_yml \
@@ -251,9 +236,9 @@ class Emulator(Worker):
 					  + '    tty: true\n' \
 					  + '    cap_add:\n' \
 					  + '      - NET_ADMIN\n' \
-					  + '    cpuset: ' + str(curr_cpu) + '-' + str(curr_cpu + en.cpu - 1) + '\n' \
+					  + '    cpuset: ' + str(self.curr_cpu) + '-' + str(self.curr_cpu + en.cpu - 1) + '\n' \
 					  + '    mem_limit: ' + str(en.ram) + 'M\n'
-			curr_cpu += en.cpu
+			self.curr_cpu += en.cpu
 			str_yml += '    environment:\n'
 			for key in en.variable:
 				str_yml += '      - ' + key + '=' + en.variable[key] + '\n'
@@ -269,14 +254,12 @@ class Emulator(Worker):
 					str_yml += '      - ' + v + ':' + en.volume[v] + '\n'
 			if en.cmd:
 				str_yml += '    command: ' + ' '.join(en.cmd) + '\n'
-			str_yml += '    networks:\n' \
-					 + '		none: {{}}'
 
 		# save as yml file
-		yml_name = os.path.join(path, self.nameW + '.yml')
+		yml_name = os.path.join(path, self.nameW + '_' + taskId + '.yml')
 		with open(yml_name, 'w') as f:
 			f.writelines(str_yml)
-
+	
 
 class Testbed(object):
 	"""
@@ -508,6 +491,13 @@ class Testbed(object):
 		"""
 		for cs in self.emulator.values():
 			cs.save_yml(self.dirName)
+	
+	def save_yml_user(self):
+		"""
+		save the deployment of emulated nodes as yml files.
+		"""
+		for cs in self.emulator.values():
+			cs.save_yml_user(self.dirName)
 
 	def __export_nfs(self):
 		"""
