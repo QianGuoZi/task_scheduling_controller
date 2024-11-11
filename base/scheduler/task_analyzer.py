@@ -2,12 +2,14 @@
 # 分析用户请求，将资源请求的内容丢给scheduler，从scheduler中拿到部署方案
 # 将方案丢给edgetb部署
 
+from concurrent.futures import ALL_COMPLETED, wait
 import os
 import shutil
 from typing import Dict
 import zipfile
 from flask import request
-from base.utils import read_json
+from base.node import Emulator
+from base.utils import read_json, send_data
 
 # dirName = os.path.abspath (os.path.dirname (__file__))
 dirName = '/home/qianguo/controller/'
@@ -159,12 +161,23 @@ class TaskAnalyzer(object):
                 self.testbed.load_link (links_json)
 
                 # 保存信息
-                self.testbed.save_yml()
-                self.testbed.save_node_info()
-                self.testbed.manager.load_node_info()
-                self.testbed.__send_emulator_info()
+                self.testbed.save_yml_user(taskId) # 保存yml文件到controller
+                self.testbed.save_node_info() # 保存节点信息到testbed
+                self.testbed.manager.load_node_info() # 保存节点信息到manager
                 self.testbed.__send_tc()
+
                 # lauch要重写
+            
+            def launch_emulated(self):
+                tasks = []
+                for s in self.testbed.emulator.values():
+                    if s.eNode:
+                        tasks.append(self.testbed.executor.submit(launch_emulated, s, self.testbed.dirName))
+                wait(tasks, return_when=ALL_COMPLETED)
+
+            def launch_emulated(self, emulator: Emulator, path: str):
+                with open(os.path.join(path, emulator.nameW + '.yml'), 'r') as f:
+                    send_data('POST', '/emulated/launch', emulator.ipW, self.agentPort, files={'yml': f})
             
             def task_finish():
                 """

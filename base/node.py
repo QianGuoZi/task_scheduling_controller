@@ -492,12 +492,12 @@ class Testbed(object):
 		for cs in self.emulator.values():
 			cs.save_yml(self.dirName)
 	
-	def save_yml_user(self):
+	def save_yml_user(self, taskId: int):
 		"""
 		save the deployment of emulated nodes as yml files.
 		"""
 		for cs in self.emulator.values():
-			cs.save_yml_user(self.dirName)
+			cs.save_yml_user(self.dirName, taskId)
 
 	def __export_nfs(self):
 		"""
@@ -742,7 +742,6 @@ class Testbed(object):
 			path_req = os.path.join(self.dirName, 'dml_app/dml_req.txt')
 			self.__build_physical_env(path_req)
 
-		# self.__send_network() #通过请求发送组网的情况
 		self.__send_tc()
 		self.__launch_all_physical()
 		self.launch_all_emulated()

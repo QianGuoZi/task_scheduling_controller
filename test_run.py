@@ -14,4 +14,10 @@ if __name__ == '__main__':
 	testbed = default_testbed (ip='222.201.187.50', dir_name=dirName, manager_class=GlManager, task_analyzer=TaskAnalyzer, scheduler=Scheduler)
 	nfsApp = testbed.add_nfs (tag='dml_app', path=os.path.join (dirName, 'dml_app'))
 	nfsDataset = testbed.add_nfs (tag='dataset', path=os.path.join (dirName, 'dataset'))
+	# 初始化模拟器
+	emu1 = testbed.add_emulator ('emulator-1', '222.201.187.51', cpu=128, ram=256, unit='G')
+	testbed.__send_emulator_info() # 发送模拟器信息
+
+	
+	
 	testbed.flask.run(host='0.0.0.0', port=testbed.port, threaded=True)

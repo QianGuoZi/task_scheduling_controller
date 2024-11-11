@@ -128,16 +128,16 @@ class Manager(metaclass=abc.ABCMeta):
                 # emulator's ip to emulated nodes in this emulator.
                 emulator_ip_to_node: Dict[str, List] = {}
                 links_json = json.loads(f.read().replace('\'', '\"'))
-                # 存储节点信息，并清空需要更新的节点的tc信息
+                # 锟芥储锟节碉拷锟斤拷息锟斤拷锟斤拷锟斤拷锟斤拷锟揭拷锟斤拷碌慕诘锟斤拷tc锟斤拷息
                 for name in links_json:
                     n = self.testbed.name_to_node(name)
                     all_nodes.append(n)
                     n.tc.clear()
                     n.tcIP.clear()
                     n.tcPort.clear()
-                # 加载链路到node实例信息中
+                # 锟斤拷锟斤拷锟斤拷路锟斤拷node实锟斤拷锟斤拷息锟斤拷
                 self.testbed.load_link(links_json)
-                # 物理节点：直接更新，仿真节点：存储节点的链路信息
+                # 锟斤拷锟斤拷锟节点：直锟接革拷锟铰ｏ拷锟斤拷锟斤拷诘悖猴拷娲拷诘锟斤拷锟斤拷路锟斤拷息
                 for node in all_nodes:
                     if node.name in self.testbed.pNode:
                         self.testbed.executor.submit(update_physical_tc, node,
@@ -145,7 +145,7 @@ class Manager(metaclass=abc.ABCMeta):
                     else:
                         emulator_ip = node.ip
                         emulator_ip_to_node.setdefault(emulator_ip, []).append(node)
-                # 将更新好的node信息打包好，发送给worker
+                # 锟斤拷锟斤拷锟铰好碉拷node锟斤拷息锟斤拷锟斤拷茫锟斤拷锟斤拷透锟絯orker
                 for emulator_ip in emulator_ip_to_node:
                     data = {}
                     for en in emulator_ip_to_node[emulator_ip]:
@@ -209,7 +209,7 @@ class Manager(metaclass=abc.ABCMeta):
                 self.testbed.N[node_id] = {'name': node_name, 'cpu': cpus, 'ram': rams}
             return ''
 
-        # TODO:添加节点/删除节点
+
         @self.testbed.flask.route('/emulated/update', methods=['GET'])
         def route_emulated_update():
             def route_emulated_add_node(_node_info: dict, _agent_port: int, _emulator_name: str):
@@ -224,10 +224,8 @@ class Manager(metaclass=abc.ABCMeta):
 
             def route_emulated_delete_node(_node_info: dict, _agent_port: int, _emulator_name: str):
                 _emulator = self.testbed.emulator[emulator_name]
-                # 发请求agent通过docker-compose stop my_container暂停容器
                 send_data('GET', '/emulated/node/stop?node_name=' + _node_info['name'],
                                  _emulator.ipW, self.testbed.port)
-                # emulator更新信息
                 _emulator = self.testbed.emulator[_emulator_name]
                 _node = self.testbed.eNode[_node_info['name']]
                 self.testbed.delete_emulated_node(_node, _emulator)
@@ -252,14 +250,10 @@ class Manager(metaclass=abc.ABCMeta):
                     emulator_id = self.testbed.preMap[node_id]
                     emulator_name = self.testbed.W[emulator_id]['name']
                     route_emulated_delete_node(node_info, self.testbed.agentPort, emulator_name)
-            # 修改yml文件
             self.testbed.save_yml()
             self.testbed.save_node_info()
             self.load_node_info()
-            # 更新tc
             _res = send_data('GET', '/update/tc?file=' + update_json['tc_link'], self.testbed.ip, self.testbed.port)
-            # 启动docker
-            # 发送新的yml文件去启动
             self.testbed.launch_all_emulated()
             time_end = time.time()
             print('update time cost', time_end - time_start, 's')
