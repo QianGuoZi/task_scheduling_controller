@@ -128,16 +128,13 @@ class Manager(metaclass=abc.ABCMeta):
                 # emulator's ip to emulated nodes in this emulator.
                 emulator_ip_to_node: Dict[str, List] = {}
                 links_json = json.loads(f.read().replace('\'', '\"'))
-                # �洢�ڵ���Ϣ���������Ҫ���µĽڵ��tc��Ϣ
                 for name in links_json:
                     n = self.testbed.name_to_node(name)
                     all_nodes.append(n)
                     n.tc.clear()
                     n.tcIP.clear()
                     n.tcPort.clear()
-                # ������·��nodeʵ����Ϣ��
                 self.testbed.load_link(links_json)
-                # �����ڵ㣺ֱ�Ӹ��£�����ڵ㣺�洢�ڵ����·��Ϣ
                 for node in all_nodes:
                     if node.name in self.testbed.pNode:
                         self.testbed.executor.submit(update_physical_tc, node,
@@ -145,7 +142,6 @@ class Manager(metaclass=abc.ABCMeta):
                     else:
                         emulator_ip = node.ip
                         emulator_ip_to_node.setdefault(emulator_ip, []).append(node)
-                # �����ºõ�node��Ϣ����ã����͸�worker
                 for emulator_ip in emulator_ip_to_node:
                     data = {}
                     for en in emulator_ip_to_node[emulator_ip]:

@@ -2,10 +2,10 @@ from typing import Type
 
 from .manager import Manager
 from .node import Testbed
-from .scheduler.task_analyzer import TaskAnalyzer
+from .scheduler.scheduler import Scheduler
 
 
-def default_testbed (ip: str, dir_name: str, manager_class: Type [Manager], task_analyzer: TaskAnalyzer,
+def default_testbed (ip: str, dir_name: str, manager_class: Type [Manager], scheduler: Scheduler,
 		host_port: int = 8000) -> Testbed:
 	"""
 	Default settings suitable for most situations.
@@ -16,4 +16,4 @@ def default_testbed (ip: str, dir_name: str, manager_class: Type [Manager], task
 	:param host_port: emulated node maps dml port to emulator's host port
 	starting from $(host_port).
 	"""
-	return Testbed (ip, host_port, dir_name, manager_class, task_analyzer)
+	return Testbed (ip, host_port, dir_name, manager_class, scheduler)
