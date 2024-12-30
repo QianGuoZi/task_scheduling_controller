@@ -896,8 +896,7 @@ class TaskAnalyzer(object):
             taskId = request.args.get('taskId')
             allocation = task_schedule(taskId)
             edgeTB_start(taskId,allocation)
-
-			
+            return ''
 
         def task_schedule(taskId: int):
             """
@@ -946,7 +945,7 @@ class TaskAnalyzer(object):
         def launch_emulated_user(self, emulator: Emulator, taskId: int, path: str):
             with open(os.path.join(path, emulator.nameW + '_' + str(taskId) +'.yml'), 'r') as f:
                 send_data('POST', '/emulated/launch', emulator.ipW, self.agentPort, files={'yml': f})
-           
+
         def task_finish():
             """
             最终收尾工作
