@@ -18,7 +18,11 @@ agent_addr = os.getenv ('NET_AGENT_ADDRESS')
 node_name = os.getenv ('NET_NODE_NAME')
 
 input_shape = nn.input_shape
-log_file = os.path.abspath (os.path.join (dirname, '../dml_file/log/', node_name + '.log'))
+log_file = os.path.abspath (os.path.join (dirname, '../../dml_file/log/', node_name + '.log'))
+print("dirname:", dirname)
+print("node_name:", node_name)
+print("log_file path will be:", log_file)
+os.makedirs(os.path.dirname(log_file), exist_ok=True)
 worker_utils.set_log (log_file)
 conf = {}
 peer_list = []

@@ -792,7 +792,7 @@ class TaskAnalyzer(object):
     def launch_emulated_user(self, emulator: Emulator, taskId: int, path: str):
         with open(os.path.join(path, emulator.nameW + '_' + str(taskId) +'.yml'), 'r') as f:
             print(f"send {emulator.nameW}_{str(taskId)}.yml")
-            send_data('POST', '/emulated/launch', emulator.ipW, self.testbed.agentPort, files={'yml': f})
+            send_data('POST', '/emulated/launch', emulator.ipW, self.testbed.agentPort, data={'taskId': taskId}, files={'yml': f})
 
     def launch_all_emulated_user(self, taskId: int, dirName: str):
         tasks = []
@@ -936,9 +936,9 @@ class TaskAnalyzer(object):
             nfsDataset = self.testbed.nfs['dataset']
                 
             # 添加节点
-            for node, node_info in allocation.items():
+            for node_name, node_info in allocation.items():
                 emu = self.testbed.emulator[node_info['emulator']]
-                en = self.testbed.add_emulated_node (node, '/home/qianguo/worker/dml_app/'+str(taskId),
+                en = self.testbed.add_emulated_node (node_name, '/home/qianguo/worker/dml_app/'+str(taskId),
                     ['python3', 'gl_peer.py'], 'dml:v1.0', cpu=node_info['cpu'], ram=node_info['ram'], unit='G', emulator=emu)
                 en.mount_local_path ('./dml_file', '/home/qianguo/worker/dml_file')
                 en.mount_nfs (nfsApp, '/home/qianguo/worker/dml_app')
