@@ -2,6 +2,7 @@ import ipaddress
 import json
 import os
 import shutil
+import time
 import subprocess as sp
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
@@ -784,10 +785,16 @@ dirName = '/home/qianguo/controller/'
 class TaskAnalyzer(object):
     def __init__(self, testbed: Testbed):
         self.testbed = testbed
-        self.taskFileList: Dict[int, Dict] = {} 
+        self.taskFileList: Dict[int, Dict] = {} #存储taskId和对应的压缩包名字
+        self.taskIdtoNode: Dict[int, List[str]] = {} #存储taskId和对应的节点名字
         self.currtkId: int = 0
 
         self.__load_default_route()
+
+    def add_node_name(self, taskId: int, nodeName: str):
+        if taskId not in self.taskIdtoNode:
+            self.taskIdtoNode[taskId] = []
+        self.taskIdtoNode[taskId].append(taskId)
     
     def launch_emulated_user(self, emulator: Emulator, taskId: int, path: str):
         with open(os.path.join(path, emulator.nameW + '_' + str(taskId) +'.yml'), 'r') as f:
@@ -903,8 +910,8 @@ class TaskAnalyzer(object):
             
             return
         
-        @self.testbed.flask.route('/startTask', methods=['GET'])
-        def route_start_task():
+        @self.testbed.flask.route('/startupTask', methods=['GET'])
+        def route_startup_task():
             """
             用户信息已发送完毕，开始执行用户的任务，主要步骤有：
             1、处理用户文件
@@ -938,6 +945,7 @@ class TaskAnalyzer(object):
             # 添加节点
             for node_name, node_info in allocation.items():
                 emu = self.testbed.emulator[node_info['emulator']]
+                self.add_node_name(taskId, node_name)
                 en = self.testbed.add_emulated_node (node_name, '/home/qianguo/worker/dml_app/'+str(taskId),
                     ['python3', 'gl_peer.py'], 'dml:v1.0', cpu=node_info['cpu'], ram=node_info['ram'], unit='G', emulator=emu)
                 en.mount_local_path ('./dml_file', '/home/qianguo/worker/dml_file')
@@ -954,10 +962,12 @@ class TaskAnalyzer(object):
             self.testbed.manager.load_node_info() # 保存节点信息到manager
             self.testbed.send_tc() # 将tc信息发送给worker，没有的添加，有的更新
             self.launch_all_emulated_user(taskId, dirName)
-            
-
-
-
+        
+        # @self.testbed.flask.route('/startTask', methods=['GET'])
+        # def route_start_task():    
+        #     return
+        # 放到manager里
+        
         def task_finish():
             """
             最终收尾工作
@@ -968,4 +978,4 @@ class TaskAnalyzer(object):
         获取下一个任务id
         """
         self.currtkId += 1
-        return self.currtkId
+        return self.currtkId32

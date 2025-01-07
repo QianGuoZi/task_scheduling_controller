@@ -355,9 +355,38 @@ class Manager(metaclass=abc.ABCMeta):
             msg = self.on_route_start(request)
             # return str explicitly is necessary.
             return str(msg)
+        
+        @self.testbed.flask.route('/startTask', methods=['GET'])
+        def route_start_task():
+            """
+            开始任务
+            """
+            taskId = request.args.get('taskId')
+            if self.logFileFolder == '':
+                self.logFileFolder = os.path.join(self.testbed.dirName, 'dml_file/log', taskId,
+                                                  time.strftime('-%Y-%m-%d-%H-%M-%S', time.localtime(time.time())))
+            msg = self.on_route_start(request)
+            # return str explicitly is necessary.
+            return str(msg)
 
         @self.testbed.flask.route('/finish', methods=['GET'])
         def route_finish():
+            """
+            when finished, ask node for log file.
+            user need to implement self.on_route_finish () by extend this class.
+            """
+            all_finished = self.on_route_finish(request)
+            if all_finished:
+                print('training completed')
+                os.makedirs(self.logFileFolder)
+                for pn in self.pNode.values():
+                    send_data('GET', '/log', pn.ip, pn.port)
+                for en in self.eNode.values():
+                    send_data('GET', '/log', en.ip, en.port)
+            return ''
+        
+        @self.testbed.flask.route('/finishTask', methods=['GET'])
+        def route_finish_task():
             """
             when finished, ask node for log file.
             user need to implement self.on_route_finish () by extend this class.
