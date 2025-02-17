@@ -3,13 +3,15 @@ import os
 from base import default_testbed
 from base.utils import read_json
 from gl_manager import GlManager
+from base.node import TaskAnalyzer
+from base.scheduler.scheduler import Scheduler
 
 # path of this file.
 dirName = os.path.abspath (os.path.dirname (__file__))
 
 # we made up the following physical hardware so this example is NOT runnable.
 if __name__ == '__main__':
-	testbed = default_testbed (ip='222.201.187.50', dir_name=dirName, manager_class=GlManager)
+	testbed = default_testbed (ip='222.201.187.50', dir_name=dirName, manager_class=GlManager,  scheduler=Scheduler)
 
 	# export a nfs read-only absolute path in this ctl so that
 	# emulated nodes and physical nodes can mount it.
